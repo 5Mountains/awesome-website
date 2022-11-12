@@ -1,40 +1,36 @@
-import React, { useState, SyntheticEvent, CSSProperties } from 'react';
+import { useState, SyntheticEvent, CSSProperties } from 'react';
 import { Button, Grid, TextField, Alert } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from '../../firebase';
 import { IUserData } from './types';
 import { styles } from './styles';
+import { useAuth } from '../../context/AuthContext';  
+
 
 const BASE_USER_DATA: IUserData = {email: '', password: ''};
 
 export const LogIn = (): JSX.Element => {
+  const { logIn } = useAuth()!;
   const navigate = useNavigate();
   
   const [loading, setLoading] = useState<boolean>(false);
   const [userData, setUserData] = useState<IUserData>(BASE_USER_DATA);
   const [error, setError] = useState<string>('');
 
-  const handleOnSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
+  const handleOnSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
     if (error) setError('')
-
-    signInWithEmailAndPassword(auth, userData.email, userData.password)
-    .then((userCredential) => {
-      const user = userCredential.user;
-
-      if (user) navigate('/');
-
+    
+    try {
+      await logIn(userData.email, userData.password);
+      navigate('/');
       setUserData(BASE_USER_DATA);
-    })
-    .catch((error) => {
-      setError(error.message);
-    })
-    .finally(() => {
+    } catch (error) {
+      setError(error instanceof Error ? error.message : String(error));
+    } finally {
       setLoading(false);
-    })
+    }
   }
 
   return (
