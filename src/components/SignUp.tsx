@@ -1,5 +1,6 @@
 import React, { useState, SyntheticEvent } from 'react'
 import { Button, Grid, TextField, Alert } from '@mui/material'
+import { Link, useNavigate } from "react-router-dom";
 
 export interface IUserData {
     email: string;
@@ -7,6 +8,8 @@ export interface IUserData {
 }
 
 export const SignUp = (): JSX.Element => {
+  const navigate = useNavigate();
+
   const [loading, setLoading] = useState<boolean>(false);
   const [userData, setUserData] = useState<IUserData>({email: '', password: ''});
   const [error, setError] = useState<string>('')
@@ -14,6 +17,8 @@ export const SignUp = (): JSX.Element => {
   const handleOnSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(userData.email, userData.password);
+
+    navigate('/');
 
     setUserData({email: '', password: ''});
   }
@@ -52,7 +57,7 @@ export const SignUp = (): JSX.Element => {
             />
             <Button type='submit' style={{ margin: '10px 0' }} variant='outlined'>Sign Up</Button>
         </form>
-        <Button>Do you already have a user? Log In</Button>
+        <div>Do you already have a user? <Link to={'/login'}>Log In</Link></div>
     </Grid>
   )
 }
