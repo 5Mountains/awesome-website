@@ -4,15 +4,15 @@ import {
   Routes,
   Route,
 } from "react-router-dom";
-import { LogIn } from './LogIn/LogIn';
+import { LogIn } from './LogIn';
 import { SignUp } from './SignUp';
-import { UserPage } from './UserPage';
+import { Profile } from './Profile';
 
 const App = (): JSX.Element => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<UserPage />} />
+        <Route path="/" element={<Profile />} />
         <Route path="/login" element={<LogIn />} />
         <Route path="/signup" element={<SignUp/>}  />
       </Routes>
