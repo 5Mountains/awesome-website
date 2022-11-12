@@ -16,7 +16,7 @@ export const styles = {
     avatarContainer: {
         display: "flex",
         alignSelf: "center",
-        marginBottom: "15px",
+        margin: "15px",
     },
     avatar: {
         height: "75px",
