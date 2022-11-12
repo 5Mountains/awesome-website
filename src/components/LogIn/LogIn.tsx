@@ -6,30 +6,26 @@ import { auth } from '../../firebase';
 import { IUserData } from './types';
 import { styles } from './styles';
 
-const BASE_USER_DATA = {email: '', password: ''};
+const BASE_USER_DATA: IUserData = {email: '', password: ''};
 
 export const LogIn = (): JSX.Element => {
   const navigate = useNavigate();
   
   const [loading, setLoading] = useState<boolean>(false);
   const [userData, setUserData] = useState<IUserData>(BASE_USER_DATA);
-  const [error, setError] = useState<string>('')
+  const [error, setError] = useState<string>('');
 
   const handleOnSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
-    if (error) {
-      setError('')
-    }
+    if (error) setError('')
 
     signInWithEmailAndPassword(auth, userData.email, userData.password)
     .then((userCredential) => {
       const user = userCredential.user;
 
-      if (user) {
-        navigate('/');
-      }
+      if (user) navigate('/');
 
       setUserData(BASE_USER_DATA);
     })
