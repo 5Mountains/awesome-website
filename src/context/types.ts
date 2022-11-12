@@ -1,4 +1,9 @@
+import { ReactNode } from "react";
 import { User, UserCredential } from "firebase/auth";
+
+export interface IChildrenProps {
+    children: ReactNode;
+}
 
 export interface IAppContext {
     currentUser: User | null; 
