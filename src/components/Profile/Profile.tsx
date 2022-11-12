@@ -1,9 +1,9 @@
 import React from 'react';
 
-export const UserPage = (): JSX.Element => {
+export const Profile = (): JSX.Element => {
   return (
     <div>
-      User Page
+      Profile
     </div>
   );
 }

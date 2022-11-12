@@ -6,16 +6,22 @@ import { auth } from '../../firebase';
 import { IUserData } from './types';
 import { styles } from './styles';
 
+const BASE_USER_DATA = {email: '', password: ''};
+
 export const LogIn = (): JSX.Element => {
   const navigate = useNavigate();
   
   const [loading, setLoading] = useState<boolean>(false);
-  const [userData, setUserData] = useState<IUserData>({email: '', password: ''});
+  const [userData, setUserData] = useState<IUserData>(BASE_USER_DATA);
   const [error, setError] = useState<string>('')
 
   const handleOnSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+
+    if (error) {
+      setError('')
+    }
 
     signInWithEmailAndPassword(auth, userData.email, userData.password)
     .then((userCredential) => {
@@ -24,6 +30,8 @@ export const LogIn = (): JSX.Element => {
       if (user) {
         navigate('/');
       }
+
+      setUserData(BASE_USER_DATA);
     })
     .catch((error) => {
       setError(error.message);
@@ -31,8 +39,6 @@ export const LogIn = (): JSX.Element => {
     .finally(() => {
       setLoading(false);
     })
-
-    setUserData({email: '', password: ''});
   }
 
   return (
@@ -43,7 +49,7 @@ export const LogIn = (): JSX.Element => {
       justifyContent="center" 
       alignItems="center"
     >
-        <h2>Log In</h2>
+        <h2 style={styles.title}>Log In</h2>
         {error && <Alert severity="error">{error}</Alert>}
         <form style={styles.form as CSSProperties} onSubmit={handleOnSubmit}>
             <TextField 
