@@ -1,15 +1,15 @@
-import React, { useState, SyntheticEvent, CSSProperties, useRef, ChangeEvent } from 'react'
+import { useState, SyntheticEvent, CSSProperties, useRef, ChangeEvent } from 'react'
 import { Button, Grid, TextField, Alert, Avatar } from '@mui/material'
 import { Link, useNavigate } from "react-router-dom";
 import { IUserData } from './types';
 import { styles } from './styles';
-import { auth, uploadPhoto, connectPhoto } from '../../firebase';
-import { createUserWithEmailAndPassword } from "firebase/auth";
 import { checkAvatarValidity } from './helpers';
+import { useAuth } from '../../context/AuthContext';  
 
 const BASE_USER_DATA: IUserData = {email: '', password: '', confirmPassword: ''};
 
 export const SignUp = (): JSX.Element => {
+  const { signUp, uploadPhoto, connectPhoto } = useAuth()!;
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -30,19 +30,23 @@ export const SignUp = (): JSX.Element => {
         return setError('File does not fit for avatar purpose. Choose another one!')
       }
 
-      setLoading(true);
-
-      const avatarUrl = await uploadPhoto(fileObj);
-      if (avatarUrl) {
-        setAvatar(avatarUrl);
+      try {
+        setLoading(true);
+  
+        const avatarUrl = await uploadPhoto(fileObj);
+        if (avatarUrl) {
+          setAvatar(avatarUrl);
+        }
+      } catch (error) {
+        setError(error instanceof Error ? error.message : String(error));
+      } finally {
+        setLoading(false);
       }
-      
-      setLoading(false);
   };
 
-  const handleOnSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
+  const handleOnSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+  
     const { email, password, confirmPassword } = userData;
 
     if (error) {
@@ -53,28 +57,20 @@ export const SignUp = (): JSX.Element => {
       return setError('Passwords do not match')
     }
 
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      const user = userCredential.user;
-
+      const user = await signUp(email, password);
       if (avatar) {
-        connectPhoto(user, avatar);
+        await connectPhoto(user.user, avatar);
       }
-
-      if (user) {
-        navigate('/');
-      }
-
+      navigate('/');
       setUserData(BASE_USER_DATA);
-    })
-    .catch((error) => {
-      setError(error.message);
-    })
-    .finally(() => {
+    } catch (error) {
+      setError(error instanceof Error ? error.message : String(error));
+    } finally {
       setLoading(false);
-    })
+    }
   }
 
   return (

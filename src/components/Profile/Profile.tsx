@@ -1,17 +1,15 @@
-import React, { useState } from 'react';
-import { User } from 'firebase/auth';
-import { auth } from "./../../firebase";
+import { useState } from 'react';
 import { Alert, Avatar, Button, Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';  
 import { styles } from './styles';
 
-export const Profile = (): JSX.Element => {  
+export const Profile = (): JSX.Element => { 
+  const { currentUser, logOut } = useAuth()!; 
+  const navigate = useNavigate();
   const [error, setError] = useState('');
 
-  const user: User = auth.currentUser!;
-  const {email, photoURL} = user;
-
-  const navigate = useNavigate();
+  const {email, photoURL} = currentUser!;
 
   const handleLogOut = async () => {
     if (error) {
@@ -19,10 +17,10 @@ export const Profile = (): JSX.Element => {
     }
     
     try {
-      await auth.signOut();
+      await logOut();
       navigate('/login');
     } catch (error) {
-      setError(`Error occur during log out: ${error}`);
+      setError(error instanceof Error ? error.message : String(error));
     }
   }
 
