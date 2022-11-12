@@ -1,5 +1,5 @@
-import { useContext, useState, useEffect, ReactNode, createContext } from "react";
-import { IAppContext } from "./types";
+import { useContext, useState, useEffect, createContext } from "react";
+import { IAppContext, IChildrenProps } from "./types";
 import { auth, storage } from "../firebase";
 import { 
   createUserWithEmailAndPassword, 
@@ -15,7 +15,7 @@ const AuthContext = createContext<IAppContext | null>(null);
 
 export const useAuth = () => useContext(AuthContext);
 
-export const AuthProvider = ({ children }: {children: ReactNode}): JSX.Element => {
+export const AuthProvider = ({ children }: IChildrenProps): JSX.Element => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
