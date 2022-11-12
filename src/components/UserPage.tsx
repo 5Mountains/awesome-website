@@ -1,11 +1,9 @@
 import React from 'react';
 
-const App = (): JSX.Element => {
+export const UserPage = (): JSX.Element => {
   return (
     <div>
-      App
+      User Page
     </div>
   );
 }
-
-export default App;
