@@ -18,8 +18,6 @@ export const SignUp = (): JSX.Element => {
     e.preventDefault();
     console.log(userData.email, userData.password);
 
-    navigate('/');
-
     setUserData({email: '', password: ''});
   }
 

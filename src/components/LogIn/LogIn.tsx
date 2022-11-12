@@ -1,11 +1,10 @@
-import React, { useState, SyntheticEvent } from 'react';
+import React, { useState, SyntheticEvent, CSSProperties } from 'react';
 import { Button, Grid, TextField, Alert } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
-
-export interface IUserData {
-    email: string;
-    password: string;
-}
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from '../../firebase';
+import { IUserData } from './types';
+import { styles } from './styles';
 
 export const LogIn = (): JSX.Element => {
   const navigate = useNavigate();
@@ -16,18 +15,37 @@ export const LogIn = (): JSX.Element => {
 
   const handleOnSubmit = (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(userData.email, userData.password);
+    setLoading(true);
 
-    navigate('/');
+    signInWithEmailAndPassword(auth, userData.email, userData.password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+
+      if (user) {
+        navigate('/');
+      }
+    })
+    .catch((error) => {
+      setError(error.message);
+    })
+    .finally(() => {
+      setLoading(false);
+    })
 
     setUserData({email: '', password: ''});
   }
 
   return (
-    <Grid style={{ height: '100vh' }} container direction="column" justifyContent="center" alignItems="center">
+    <Grid 
+      style={styles.root} 
+      container 
+      direction="column" 
+      justifyContent="center" 
+      alignItems="center"
+    >
         <h2>Log In</h2>
         {error && <Alert severity="error">{error}</Alert>}
-        <form onSubmit={handleOnSubmit}>
+        <form style={styles.form as CSSProperties} onSubmit={handleOnSubmit}>
             <TextField 
                 required 
                 margin="dense" 
@@ -46,9 +64,9 @@ export const LogIn = (): JSX.Element => {
                 value={userData.password} 
                 onChange={(e) => setUserData({...userData, password: e.target.value})}
             />
-            <Button type='submit' style={{ margin: '10px 0' }} variant='outlined'>Log In</Button>
+            <Button disabled={loading} type='submit' style={styles.submitBtn} variant='outlined'>Log In</Button>
         </form>
-        <Button>Do not have an account? <Link to={'/signup'}>Sign Up</Link></Button>
+        <div>Do not have an account? <Link to={'/signup'}>Sign Up</Link></div>
     </Grid>
   )
 }
